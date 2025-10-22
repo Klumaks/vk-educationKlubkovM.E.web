@@ -1,0 +1,343 @@
+:root {
+    --primary_green: #49fe8c;
+    --main_heder_text_color: rgb(242, 233, 238);
+    --main_hrew_color: rgb(237, 121, 27);
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    gap: 12px;
+    color: var(--main_heder_text_color);
+    background-color: rgb(98, 154, 211);
+    border-bottom: 5px solid var(--main_hrew_color);
+}
+
+header input[type="text"] {
+    outline: none;
+    background: none;
+    border: 1px solid var(--main_heder_text_color);
+    border-radius: 4px;
+    padding: 6px;
+    color: var(--main_heder_text_color);
+    min-width: 32%;
+}
+
+header input[type="text"]::placeholder {
+    color: var(--main_heder_text_color);
+    opacity: 1;
+}
+
+
+header .search-button {
+    border: none;
+    color: white;
+    background-color: var(--primary_green);
+    padding: 6px;
+    cursor: pointer;
+    -webkit-box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.8);
+    -moz-box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.8);
+    box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.8);
+    transition: all 0.1s ease;
+}
+
+header .search-button:hover {
+    background-color: #3ae077;
+}
+
+
+header .search-button:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.8);
+    background-color: #2fc463;
+}
+
+header .logo {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.profile-actions a {
+    color: var(--main_heder_text_color);
+}
+
+body {
+    background-color: rgb(232, 240, 248);
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #ddd;
+    background-image: url('avatar.jpg');
+    background-size: cover;
+    background-position: center;
+    border: 2px solid var(--main_heder_text_color);
+}
+
+main {
+    display: flex;
+    justify-content: start;
+}
+
+.main-container {
+    margin-top: 24px;
+    width: 70%;
+    padding: 0 24px;
+}
+
+.questions-list {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.question {
+    display: flex;
+    padding: 6px;
+    border: 2px solid rgb(92, 143, 194);
+    background-color: rgba(98, 154, 211, 0.765);
+
+}
+
+.question-author {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+
+    padding: 1 24px;
+    margin: 5px;
+    margin-left: 10px;
+    margin-right: 0px;
+    width: 10%;
+    display: flex;
+    justify-content: start;
+    color: var(--main_heder_text_color);
+
+}
+
+.author-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #ddd;
+    background-image: url('avatar2.jpg');
+    background-size: cover;
+    background-position: center;
+    border: 2px solid var(--main_heder_text_color);
+
+}
+
+
+
+.question p {
+    color: var(--main_heder_text_color);
+}
+
+.question-header {
+
+    font-size: 24px;
+
+}
+
+.question {
+    color: var(--main_heder_text_color);
+}
+
+.question a {
+    color: var(--main_heder_text_color);
+}
+
+.question a:hover {
+    text-decoration: none;
+}
+
+.votes {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+}
+
+.vote-btn {
+    background: none;
+    border: 2px solid var(--main_heder_text_color);
+    color: var(--main_heder_text_color);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.vote-btn:hover {
+    transform: scale(1.1);
+}
+
+.vote-btn.up:hover {
+    background-color: var(--primary_green);
+    border-color: var(--primary_green);
+    color: #000;
+}
+
+.vote-btn.down:hover {
+    background-color: #ff4444;
+    border-color: #ff4444;
+    color: white;
+}
+
+.vote-btn:active {
+    transform: scale(0.95);
+}
+
+.question-text {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    padding: 0 24px;
+
+    margin: 5px;
+}
+
+.main-container h2 {
+    color: rgb(92, 143, 194);
+}
+
+.main-container h2 a {
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--main_hrew_color);
+}
+
+.main-container h2 a:hover {
+    text-decoration: underline;
+}
+
+aside {
+    margin-top: 24px;
+    width: 30%;
+    padding: 0 24px;
+}
+
+.tags-container {
+    display: flex;
+    flex-direction: column;
+    color: rgb(92, 143, 194);
+    margin-bottom: 30px;
+}
+
+.tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    font-family: "Coming Soon", cursive;
+
+}
+.tags a{
+    margin-left: 5px;
+        text-decoration: none;
+}
+
+.tags a:hover {
+    text-decoration: underline;
+}
+
+.text-red {
+    color: red;
+    font-size: 20px;
+}
+
+.text-green {
+    color: green;
+}
+
+.best-members {
+    color: rgb(92, 143, 194);
+}
+
+.members a {
+    color: var(--main_hrew_color);
+    margin-left: 5px;
+    font-family: "Coming Soon", cursive;
+    text-decoration: none;
+}
+
+.members a:hover {
+    text-decoration: underline;
+}
+.pagination {
+    display: flex;
+    justify-content:flex-start;
+    align-items: center;
+    margin-top: 80px;
+    padding: 20px;
+
+    border-top: 1px solid rgb(92, 143, 194);
+}
+
+.page-numbers {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border: 1px solid rgb(92, 143, 194);
+    background-color: white;
+    color: rgb(92, 143, 194);
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    min-width: 40px;
+    height: 40px;
+}
+
+.page-link:hover:not(.active){
+    background-color: rgba(92, 143, 194, 0.1);
+    border-color: rgb(70, 120, 170);
+    transform: translateY(-1px);
+}
+
+.page-link.active {
+    background-color: rgb(92, 143, 194);
+    color: white;
+    border-color: rgb(92, 143, 194);
+    font-weight: bold;
+}
+.page-link.prev{
+    margin-right: 8px;
+}
+.page-link.next{
+    margin-left: 8px;
+}
