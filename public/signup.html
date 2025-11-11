@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Coming+Soon&display=swap" rel="stylesheet">
+    <title>Register - AskKotyk</title>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            AskKotyk
+        </div>
+        <div class="search">
+            <input type="text" name="search" placeholder="search">
+            <button class="search-button">ASK!</button>
+        </div>
+        <div class="profile">
+            <div class="profile-actions">
+                <a href="login.html">log in</a>
+                <a href="signup.html">register</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="main-container">
+            <div class="auth-header">
+                <h2>Registration</h2>
+                <div class="error-message">Sorry, this email address already registered!</div>
+            </div>
+
+            <form class="auth-form">
+                <div class="form-group">
+                    <label for="reg-login">Login</label>
+                    <input type="text" id="reg-login" name="login" class="form-control" value="dr_pepper">
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-email">Email</label>
+                    <input type="email" id="reg-email" name="email" class="form-control" value="drpepper@mail.ru">
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-nickname">NickName</label>
+                    <input type="text" id="reg-nickname" name="nickname" class="form-control" value="Dr. Pepper">
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-password">Password</label>
+                    <input type="password" id="reg-password" name="password" class="form-control" value="**********">
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-password2">Repeat password</label>
+                    <input type="password" id="reg-password2" name="password2" class="form-control" value="**********">
+                </div>
+
+                <div class="form-group">
+                    <label>Upload avatar</label>
+                    <div class="avatar-upload">
+                        <div class="upload-controls">
+                            <span class="file-path">c:\avataring</span>
+                            <button type="button" class="btn btn-choose">choose</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" class="btn btn-submit">Register!</button>
+                </div>
+            </form>
+        </div>
+
+        <aside>
+            <div class="tags-container">
+                <h3>Popular Tags</h3>
+                <div class="tags">
+                    <a href="">perl</a>
+                    <a href="" class="text-red">python</a>
+                    <a href="">Technopark</a>
+                    <a href="" class="text-red">Mysql</a>
+                    <a href="" class="text-green">django</a>
+                </div>
+            </div>
+            <div class="best-members">
+                <h3>Best Members</h3>
+                <div class="members">
+                    <a href="">Kotyk Kotykov</a>
+                    <a href="">tech_guru</a>
+                    <a href="">Murzyk</a>
+                    <a href="">Pushok</a>
+                </div>
+            </div>
+        </aside>
+    </main>
+</body>
+</html>
