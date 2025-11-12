@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}New Question - AskKotyk{% endblock %}
+
+{% block content %}
+<div class="overlay">
+    <div class="ask-form-container">
+        <div class="ask-form-header">
+            <h2>New Question</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+
+        <div class="ask-form-body">
+            <form id="ask-form" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" id="title" name="title" class="form-control" placeholder="Enter your question title" maxlength="100">
+                    <div class="form-hint">Be specific and imagine you're asking a question to another person</div>
+                    <div class="error" id="title-error">Title is required and must be at least 10 characters long</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="text">Text</label>
+                    <textarea id="text" name="text" class="form-control" placeholder="Describe your question in detail" maxlength="1000"></textarea>
+                    <div class="form-hint">Include all the information someone would need to answer your question</div>
+                    <div class="error" id="text-error">Question text is required and must be at least 20 characters long</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tags">Tags</label>
+                    <input type="text" id="tags" name="tags" class="form-control" placeholder="Enter up to 3 tags separated by commas">
+                    <div class="tag-hint">
+                        <span class="form-hint">Add up to 3 tags to describe what your question is about</span>
+                        <span class="tag-example">moon</span>
+                        <span class="tag-example">park</span>
+                        <span class="tag-example">puzzle</span>
+                    </div>
+                    <div class="error" id="tags-error">Please enter between 1 and 3 tags separated by commas</div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="button" class="btn btn-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-submit">ASK!</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/ask.js"></script>
+{% endblock %}

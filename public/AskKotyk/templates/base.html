@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AskKotyk{% endblock %}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Coming+Soon&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            AskKotyk
+        </div>
+        <div class="search">
+            <input type="text" name="search" placeholder="search">
+            <a href="{% url 'app:ask' %}" class="search-button">ASK!</a>
+        </div>
+        <div class="profile">
+            <div class="profile-actions">
+                <a href="{% url 'app:login' %}">log in</a>
+                <a href="{% url 'app:signup' %}">register</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+
+        <aside>
+            <div class="tags-container">
+                <h3>Popular Tags</h3>
+                <div class="tags">
+                    {% for tag in popular_tags %}
+                    <a href="{% url 'app:tag' tag %}" class="{% cycle 'text-red' 'text-green' '' %}">{{ tag }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="best-members">
+                <h3>Best Members</h3>
+                <div class="members">
+                    {% for member in best_members %}
+                    <a href="#">{{ member }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    {% block pagination %}
+    {% endblock %}
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    {% block scripts %}
+    {% endblock %}
+</body>
+
+</html>

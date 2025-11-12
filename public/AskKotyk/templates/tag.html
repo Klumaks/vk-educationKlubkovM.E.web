@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Tag: {{ tag_name }} - AskKotyk{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <div class="tag-header">
+        <h2>Tag: {{ tag_name }}</h2>
+    </div>
+
+    <div class="questions-list">
+        {% for question in questions %}
+        <div class="question">
+            <div class="question-author">
+                <div class="author-avatar"></div>
+                <a href="" class="author-name">{{ question.author }}</a>
+                <div class="votes">
+                    <button class="vote-btn up">↑</button>
+                    <span class="vote-count">{{ question.votes }}</span>
+                    <button class="vote-btn down">↓</button>
+                </div>
+            </div>
+            <div class="question-text">
+                <a href="{% url 'app:question' question.id %}" class="question-header">{{ question.title }}</a>
+                <p>{{ question.text }}</p>
+                <div class="question-footer">
+                    <div class="question-meta">
+                        <a href="{% url 'app:question' question.id %}" class="answer-count answered">answers (3)</a>
+                    </div>
+                    <div class="question-tags">
+                        tags:
+                        {% for tag in question.tags %}
+                            <a href="{% url 'app:tag' tag %}" class="tag {% if tag == tag_name %}text-red{% endif %}">{{ tag }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block pagination %}
+{% if questions.has_other_pages %}
+<nav class="pagination">
+    {% if questions.has_previous %}
+        <a href="?page={{ questions.previous_page_number }}" class="page-link prev">‹ Назад</a>
+    {% else %}
+        <span class="page-link prev disabled">‹ Назад</span>
+    {% endif %}
+
+    <div class="page-numbers">
+        {% for i in questions.paginator.page_range %}
+            {% if questions.number == i %}
+                <span class="page-link active">{{ i }}</span>
+            {% else %}
+                <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if questions.has_next %}
+        <a href="?page={{ questions.next_page_number }}" class="page-link next">Вперед ›</a>
+    {% else %}
+        <span class="page-link next disabled">Вперед ›</span>
+    {% endif %}
+</nav>
+{% endif %}
+{% endblock %}

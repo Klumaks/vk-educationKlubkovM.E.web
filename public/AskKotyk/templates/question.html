@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ question.title }} - AskKotyk{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <div class="question-single">
+        <div class="question">
+            <div class="question-author">
+                <div class="author-avatar tech-guru-avatar"></div>
+                <a href="" class="author-name">{{ question.author }}</a>
+                <div class="votes">
+                    <button class="vote-btn up">↑</button>
+                    <span class="vote-count">{{ question.votes }}</span>
+                    <button class="vote-btn down">↓</button>
+                </div>
+            </div>
+            <div class="question-text">
+                <a href="" class="question-header">{{ question.title }}</a>
+                <p>{{ question.text }}</p>
+                <div class="question-tags">
+                    tags:
+                    {% for tag in question.tags %}
+                    <a href="{% url 'app:tag' tag %}" class="tag">{{ tag }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="answers-section">
+        <h2>Answers ({{ answers.paginator.count }})</h2>
+
+        {% for answer in answers %}
+        <div class="answer">
+            <div class="answer-author">
+                <div class="author-avatar
+                    {% if answer.author == 'Kotyk Kotykov' %}kotyk-avatar
+                    {% elif answer.author == 'tech_guru' %}tech-guru-avatar
+                    {% elif answer.author == 'Murzyk' %}murzyk-avatar
+                    {% elif answer.author == 'Pushok' %}pushok-avatar
+                    {% else %}anigilus-avatar{% endif %}"></div>
+                <a href="" class="author-name">{{ answer.author }}</a>
+                <div class="votes">
+                    <button class="vote-btn up">↑</button>
+                    <span class="vote-count">{{ answer.votes }}</span>
+                    <button class="vote-btn down">↓</button>
+                </div>
+            </div>
+            <div class="answer-text">
+                {% if answer.is_correct %}
+                <div class="correct-badge">☑ Correct!</div>
+                {% endif %}
+                <p>{{ answer.text }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if answers.has_other_pages %}
+    <nav class="pagination answers-pagination">
+        {% if answers.has_previous %}
+        <a href="?page={{ answers.previous_page_number }}" class="page-link prev">‹ Назад</a>
+        {% else %}
+        <span class="page-link prev disabled">‹ Назад</span>
+        {% endif %}
+
+        <div class="page-numbers">
+            {% for i in answers.paginator.page_range %}
+            {% if answers.number == i %}
+            <span class="page-link active">{{ i }}</span>
+            {% else %}
+            <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        {% if answers.has_next %}
+        <a href="?page={{ answers.next_page_number }}" class="page-link next">Вперед ›</a>
+        {% else %}
+        <span class="page-link next disabled">Вперед ›</span>
+        {% endif %}
+    </nav>
+    {% endif %}
+
+    <div class="answer-form-section">
+        <h2>Your Answer</h2>
+        <form class="answer-form">
+            <textarea class="form-control" placeholder="Enter your answer here" rows="6"></textarea>
+            <div class="form-footer">
+                <button type="submit" class="btn btn-submit">Answer</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
