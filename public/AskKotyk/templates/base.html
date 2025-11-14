@@ -38,7 +38,7 @@
                 <h3>Popular Tags</h3>
                 <div class="tags">
                     {% for tag in popular_tags %}
-                    <a href="{% url 'app:tag' tag %}" class="{% cycle 'text-red' 'text-green' '' %}">{{ tag }}</a>
+                    <a href="{% url 'app:tag' tag.name %}" class="{% cycle 'text-red' 'text-green' '' %}">{{ tag.name }}</a>
                     {% endfor %}
                 </div>
             </div>
@@ -46,7 +46,7 @@
                 <h3>Best Members</h3>
                 <div class="members">
                     {% for member in best_members %}
-                    <a href="#">{{ member }}</a>
+                    <a href="#">{{ member.username }}</a>
                     {% endfor %}
                 </div>
             </div>

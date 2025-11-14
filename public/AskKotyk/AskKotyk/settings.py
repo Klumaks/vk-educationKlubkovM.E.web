@@ -1,8 +1,13 @@
+import os
 from pathlib import Path
+from configparser import ConfigParser
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-askkotyk-homework-2-secret-key-2024'
+config = ConfigParser()
+config.read(os.path.join(BASE_DIR, 'conf', 'local.conf'))
+
+SECRET_KEY = config.get('project', 'SECRET_KEY', fallback='django-insecure-askkotyk-secret-key-2024')
 
 DEBUG = True
 
@@ -70,6 +75,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -80,4 +87,8 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = 'app.User'

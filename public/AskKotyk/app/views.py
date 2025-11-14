@@ -1,129 +1,172 @@
+import math
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.generic import TemplateView
+from django.db.models import Count
+from app.models import Question, Tag, Answer, User
 
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.shortcuts import render, redirect
+class PaginatedView:
+    QUESTIONS_PER_PAGE = 5
 
-def paginate(objects_list, request, per_page=10):
-    paginator = Paginator(objects_list, per_page)
-    page = request.GET.get('page', 1)
+    def paginate_questions(self, questions, page):
+        count_questions = questions.count()
+        max_page = math.ceil(count_questions / self.QUESTIONS_PER_PAGE)
 
-    try:
-        objects = paginator.page(page)
-    except PageNotAnInteger:
-        objects = paginator.page(1)
-    except EmptyPage:
-        objects = paginator.page(paginator.num_pages)
+        if page == 1:
+            paginated_questions = questions[0:self.QUESTIONS_PER_PAGE]
+        else:
+            start_idx = (page - 1) * self.QUESTIONS_PER_PAGE
+            end_idx = start_idx + self.QUESTIONS_PER_PAGE
+            paginated_questions = questions[start_idx:end_idx]
 
-    return objects
+        return {
+            'questions': paginated_questions,
+            'count_questions': count_questions,
+            'max_page': max_page,
+            'pages': range(1, int(max_page) + 1),
+        }
 
-def index(request):
-    questions = []
-    for i in range(1, 30):
-        questions.append({
-            'title': f'How to build a moon park? #{i}',
-            'id': i,
-            'text': f'Guys, i have trouble with a moon park. Can\'t find the black-jack... Question {i}',
-            'tags': ['python', 'django', 'moon'],
-            'author': f'user{i}',
-            'votes': 42 - i
-        })
+class BaseView(TemplateView):
+    def get_base_context(self):
+        popular_tags = Tag.objects.annotate(question_count=Count('question')).order_by('-question_count')[:15]
+        best_members = User.objects.annotate(answer_count=Count('answer')).order_by('-answer_count')[:10]
 
-    paginated_questions = paginate(questions, request, 5)
+        return {
+            'popular_tags': popular_tags,
+            'best_members': best_members,
+        }
 
-    context = {
-        'questions': paginated_questions,
-        'page_title': 'New Questions',
-        'popular_tags': ['perl', 'python', 'Technopark', 'MySQL', 'django'],
-        'best_members': ['Kotyk Kotykov', 'tech_guru', 'Murzyk', 'Pushok'],
-    }
-    return render(request, 'index.html', context)
+class IndexView(BaseView, PaginatedView):
+    template_name = 'index.html'
+    http_method_names = ['get',]
 
-def hot_questions(request):
-    questions = []
-    for i in range(1, 25):
-        questions.append({
-            'title': f'Hot Question about Python #{i}',
-            'id': i,
-            'text': f'This is very popular question about Python programming. Question {i}',
-            'tags': ['python', 'hot', 'popular'],
-            'author': f'user{i}',
-            'votes': 50 + i
-        })
+    def get_questions(self):
+        return Question.objects.new_questions()\
+            .select_related('author')\
+            .prefetch_related('tags')\
+            .annotate(answers_count=Count('answers'))
 
-    paginated_questions = paginate(questions, request, 5)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        page = int(self.request.GET.get('page', 1))
 
-    context = {
-        'questions': paginated_questions,
-        'page_title': 'Hot Questions',
-        'popular_tags': ['perl', 'python', 'Technopark', 'MySQL', 'django'],
-        'best_members': ['Kotyk Kotykov', 'tech_guru', 'Murzyk', 'Pushok'],
-    }
-    return render(request, 'index.html', context)
+        questions = self.get_questions()
+        pagination_data = self.paginate_questions(questions, page)
 
-def tag_questions(request, tag_name):
-    questions = []
-    for i in range(1, 20):
-        questions.append({
-            'title': f'Question about {tag_name} #{i}',
-            'id': i,
-            'text': f'This question is specifically about {tag_name}.',
-            'tags': [tag_name, 'help', 'question'],
-            'author': f'user{i}',
-            'votes': 30 + i
-        })
+        context.update(pagination_data)
+        context.update(self.get_base_context())
+        context['page_title'] = 'New Questions'
+        context['page'] = page
 
-    paginated_questions = paginate(questions, request, 5)
+        return context
 
-    context = {
-        'questions': paginated_questions,
-        'tag_name': tag_name,
-        'page_title': f'Tag: {tag_name}',
-        'popular_tags': ['perl', 'python', 'Technopark', 'MySQL', 'django'],
-        'best_members': ['Kotyk Kotykov', 'tech_guru', 'Murzyk', 'Pushok'],
-    }
-    return render(request, 'tag.html', context)
+class HotQuestionsView(BaseView, PaginatedView):
+    template_name = 'index.html'
 
-def question_detail(request, question_id):
-    question = {
-        'id': question_id,
-        'title': f'How to build a moon park? #{question_id}',
-        'text': 'Lorem ipsum — dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.',
-        'tags': ['moon', 'park', 'puzzle'],
-        'author': 'tech_guru',
-        'votes': 42
-    }
+    def get_questions(self):
+        return Question.objects.hot_questions()\
+            .select_related('author')\
+            .prefetch_related('tags')\
+            .annotate(answers_count=Count('answers'))
 
-    answers = []
-    authors = ['Kotyk Kotykov', 'tech_guru', 'Murzyk', 'Pushok', 'Anigilus']
-    for i in range(1, 8):
-        answers.append({
-            'id': i,
-            'text': f'First of all I would like to thank you for the invitation... Answer #{i}',
-            'author': authors[i % len(authors)],
-            'votes': 15 - i,
-            'is_correct': i == 1
-        })
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        page = int(self.request.GET.get('page', 1))
 
-    paginated_answers = paginate(answers, request, 3)
+        questions = self.get_questions()
+        pagination_data = self.paginate_questions(questions, page)
 
-    context = {
-        'question': question,
-        'answers': paginated_answers,
-        'popular_tags': ['perl', 'python', 'Technopark', 'MySQL', 'django'],
-        'best_members': ['Kotyk Kotykov', 'tech_guru', 'Murzyk', 'Pushok'],
-    }
-    return render(request, 'question.html', context)
+        context.update(pagination_data)
+        context.update(self.get_base_context())
+        context['page_title'] = 'Hot Questions'
+        context['page'] = page
+
+        return context
+
+class TagQuestionsView(BaseView, PaginatedView):
+    template_name = 'tag.html'
+
+    def get_questions(self, tag_name):
+        return Question.objects.with_tag(tag_name)\
+            .select_related('author')\
+            .prefetch_related('tags')\
+            .annotate(answers_count=Count('answers'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tag_name = kwargs.get('tag_name')
+        page = int(self.request.GET.get('page', 1))
+
+        tag = get_object_or_404(Tag, name=tag_name)
+
+        questions = self.get_questions(tag_name)
+        pagination_data = self.paginate_questions(questions, page)
+
+        context.update(pagination_data)
+        context.update(self.get_base_context())
+        context['tag_name'] = tag_name
+        context['page_title'] = f'Tag: {tag_name}'
+        context['page'] = page
+
+        return context
+
+class QuestionDetailView(BaseView, PaginatedView):
+    template_name = 'question.html'
+    ANSWERS_PER_PAGE = 3
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        question_id = kwargs.get('question_id')
+        page = int(self.request.GET.get('page', 1))
+
+        question = get_object_or_404(
+            Question.objects\
+                .select_related('author')\
+                .prefetch_related('tags'),
+            id=question_id
+        )
+
+        answers = Answer.objects.filter(
+            question=question,
+            is_active=True
+        ).select_related('author').order_by('-is_correct', '-created_at')
+
+        count_answers = answers.count()
+        max_page = math.ceil(count_answers / self.ANSWERS_PER_PAGE)
+
+        if page == 1:
+            paginated_answers = answers[0:self.ANSWERS_PER_PAGE]
+        else:
+            start_idx = (page - 1) * self.ANSWERS_PER_PAGE
+            end_idx = start_idx + self.ANSWERS_PER_PAGE
+            paginated_answers = answers[start_idx:end_idx]
+
+        context.update(self.get_base_context())
+        context['question'] = question
+        context['answers'] = paginated_answers
+        context['answers_count'] = count_answers
+        context['answers_max_page'] = max_page
+        context['answers_pages'] = range(1, int(max_page) + 1)
+        context['page'] = page
+
+        return context
 
 def login_view(request):
+    popular_tags = Tag.objects.annotate(question_count=Count('question')).order_by('-question_count')[:15]
+    best_members = User.objects.annotate(answer_count=Count('answer')).order_by('-answer_count')[:10]
+
     context = {
-        'popular_tags': ['perl', 'python', 'Technopark', 'MySQL', 'django'],
-        'best_members': ['Kotyk Kotykov', 'tech_guru', 'Murzyk', 'Pushok'],
+        'popular_tags': popular_tags,
+        'best_members': best_members,
     }
     return render(request, 'login.html', context)
 
 def signup_view(request):
+    popular_tags = Tag.objects.annotate(question_count=Count('question')).order_by('-question_count')[:15]
+    best_members = User.objects.annotate(answer_count=Count('answer')).order_by('-answer_count')[:10]
+
     context = {
-        'popular_tags': ['perl', 'python', 'Technopark', 'MySQL', 'django'],
-        'best_members': ['Kotyk Kotykov', 'tech_guru', 'Murzyk', 'Pushok'],
+        'popular_tags': popular_tags,
+        'best_members': best_members,
     }
     return render(request, 'signup.html', context)
 
@@ -131,8 +174,11 @@ def ask_question(request):
     if request.method == 'POST':
         return redirect('app:index')
 
+    popular_tags = Tag.objects.annotate(question_count=Count('question')).order_by('-question_count')[:15]
+    best_members = User.objects.annotate(answer_count=Count('answer')).order_by('-answer_count')[:10]
+
     context = {
-        'popular_tags': ['perl', 'python', 'Technopark', 'MySQL', 'django'],
-        'best_members': ['Kotyk Kotykov', 'tech_guru', 'Murzyk', 'Pushok'],
+        'popular_tags': popular_tags,
+        'best_members': best_members,
     }
     return render(request, 'ask.html', context)

@@ -12,25 +12,29 @@
         {% for question in questions %}
         <div class="question">
             <div class="question-author">
-                <div class="author-avatar"></div>
-                <a href="" class="author-name">{{ question.author }}</a>
+                {% if question.author.avatar %}
+                    <div class="author-avatar" style="background-image: url('{{ question.author.avatar.url }}')"></div>
+                {% else %}
+                    <div class="author-avatar"></div>
+                {% endif %}
+                <a href="" class="author-name">{{ question.author.username }}</a>
                 <div class="votes">
                     <button class="vote-btn up">↑</button>
-                    <span class="vote-count">{{ question.votes }}</span>
+                    <span class="vote-count">{{ question.votes_count }}</span>
                     <button class="vote-btn down">↓</button>
                 </div>
             </div>
             <div class="question-text">
                 <a href="{% url 'app:question' question.id %}" class="question-header">{{ question.title }}</a>
-                <p>{{ question.text }}</p>
+                <p>{{ question.text|truncatewords:30 }}</p>
                 <div class="question-footer">
                     <div class="question-meta">
-                        <a href="{% url 'app:question' question.id %}" class="answer-count answered">answers (3)</a>
+                        <a href="{% url 'app:question' question.id %}" class="answer-count answered">answers ({{ question.answers_count }})</a>
                     </div>
                     <div class="question-tags">
                         tags:
-                        {% for tag in question.tags %}
-                            <a href="{% url 'app:tag' tag %}" class="tag">{{ tag }}</a>
+                        {% for tag in question.tags.all %}
+                            <a href="{% url 'app:tag' tag.name %}" class="tag">{{ tag.name }}</a>
                         {% endfor %}
                     </div>
                 </div>
@@ -42,26 +46,38 @@
 {% endblock %}
 
 {% block pagination %}
-{% if questions.has_other_pages %}
+{% if max_page > 1 %}
 <nav class="pagination">
-    {% if questions.has_previous %}
-        <a href="?page={{ questions.previous_page_number }}" class="page-link prev">‹ Назад</a>
+    {% if page > 1 %}
+        <a href="?page={{ page|add:-1 }}" class="page-link prev">‹ Назад</a>
     {% else %}
         <span class="page-link prev disabled">‹ Назад</span>
     {% endif %}
 
-    <div class="page-numbers">
-        {% for i in questions.paginator.page_range %}
-            {% if questions.number == i %}
+   <div class="page-numbers">
+    {% if page > 3 %}
+        <a href="?page=1" class="page-link">1</a>
+        <span class="page-link ellipsis">...</span>
+    {% endif %}
+
+    {% for i in pages %}
+        {% if i >= page|add:-2 and i <= page|add:2 %}
+            {% if page == i %}
                 <span class="page-link active">{{ i }}</span>
             {% else %}
                 <a href="?page={{ i }}" class="page-link">{{ i }}</a>
             {% endif %}
-        {% endfor %}
-    </div>
+        {% endif %}
+    {% endfor %}
 
-    {% if questions.has_next %}
-        <a href="?page={{ questions.next_page_number }}" class="page-link next">Вперед ›</a>
+    {% if page < max_page|add:-2 %}
+        <span class="page-link ellipsis">...</span>
+        <a href="?page={{ max_page }}" class="page-link">{{ max_page }}</a>
+    {% endif %}
+</div>
+
+    {% if page < max_page %}
+        <a href="?page={{ page|add:1 }}" class="page-link next">Вперед ›</a>
     {% else %}
         <span class="page-link next disabled">Вперед ›</span>
     {% endif %}

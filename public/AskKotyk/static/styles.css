@@ -291,6 +291,7 @@ aside {
     text-decoration: underline;
 }
 
+/* Исправление пагинации */
 .pagination {
     display: flex;
     justify-content: flex-start;
@@ -298,14 +299,18 @@ aside {
     margin-top: 30px;
     padding: 20px 0;
     border-top: 1px solid var(--main_blue);
-    width: 70%;
-    margin-left: 24px;
+    width: 100%;
+    max-width: 70%;
+    margin-left: 0;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .page-numbers {
     display: flex;
     gap: 8px;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .page-link {
@@ -323,6 +328,19 @@ aside {
     transition: all 0.3s ease;
     min-width: 40px;
     height: 40px;
+    flex-shrink: 0;
+}
+
+
+.page-link.ellipsis {
+    border: none;
+    background: none;
+    cursor: default;
+}
+
+.page-link.ellipsis:hover {
+    background: none;
+    transform: none;
 }
 
 .page-link:hover:not(.active){
@@ -831,4 +849,3 @@ textarea.form-control {
 .profile .profile-actions a:hover {
     text-decoration: underline;
 }
-
