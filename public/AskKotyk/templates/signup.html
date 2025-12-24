@@ -6,43 +6,59 @@
 <div class="main-container">
     <div class="auth-header">
         <h2>Registration</h2>
-        <div class="error-message">Sorry, this email address already registered!</div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="error-message">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% if form.errors %}
+            <div class="error-message">
+                Please correct the errors below.
+            </div>
+        {% endif %}
     </div>
 
-    <form class="auth-form">
+    <form class="auth-form" method="post">
+        {% csrf_token %}
+
         <div class="form-group">
-            <label for="reg-login">Login</label>
-            <input type="text" id="reg-login" name="login" class="form-control" value="dr_pepper">
+            <label for="id_username">Login</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div class="error">{{ form.username.errors }}</div>
+            {% endif %}
         </div>
 
         <div class="form-group">
-            <label for="reg-email">Email</label>
-            <input type="email" id="reg-email" name="email" class="form-control" value="drpepper@mail.ru">
+            <label for="id_email">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="error">{{ form.email.errors }}</div>
+            {% endif %}
         </div>
 
         <div class="form-group">
-            <label for="reg-nickname">NickName</label>
-            <input type="text" id="reg-nickname" name="nickname" class="form-control" value="Dr. Pepper">
+            <label for="id_nickname">NickName</label>
+            {{ form.nickname }}
+            {% if form.nickname.errors %}
+                <div class="error">{{ form.nickname.errors }}</div>
+            {% endif %}
         </div>
 
         <div class="form-group">
-            <label for="reg-password">Password</label>
-            <input type="password" id="reg-password" name="password" class="form-control" value="**********">
+            <label for="id_password">Password</label>
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div class="error">{{ form.password.errors }}</div>
+            {% endif %}
         </div>
 
         <div class="form-group">
-            <label for="reg-password2">Repeat password</label>
-            <input type="password" id="reg-password2" name="password2" class="form-control" value="**********">
-        </div>
-
-        <div class="form-group">
-            <label>Upload avatar</label>
-            <div class="avatar-upload">
-                <div class="upload-controls">
-                    <span class="file-path">c:\avataring</span>
-                    <button type="button" class="btn btn-choose">choose</button>
-                </div>
-            </div>
+            <label for="id_password_confirm">Repeat password</label>
+            {{ form.password_confirm }}
+            {% if form.password_confirm.errors %}
+                <div class="error">{{ form.password_confirm.errors }}</div>
+            {% endif %}
         </div>
 
         <div class="form-footer">

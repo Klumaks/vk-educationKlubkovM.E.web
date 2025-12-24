@@ -104,13 +104,25 @@
     {% endif %}
 
     <div class="answer-form-section">
-        <h2>Your Answer</h2>
-        <form class="answer-form">
-            <textarea class="form-control" placeholder="Enter your answer here" rows="6"></textarea>
-            <div class="form-footer">
-                <button type="submit" class="btn btn-submit">Answer</button>
+    <h2>Your Answer</h2>
+    <form class="answer-form" method="post">
+        {% csrf_token %}
+
+        {% if answer_form.non_field_errors %}
+            <div class="error-message" style="margin-bottom: 20px;">
+                {{ answer_form.non_field_errors }}
             </div>
-        </form>
-    </div>
+        {% endif %}
+
+        {{ answer_form.text }}
+        {% if answer_form.text.errors %}
+            <div class="error">{{ answer_form.text.errors }}</div>
+        {% endif %}
+
+        <div class="form-footer">
+            <button type="submit" class="btn btn-submit">Answer</button>
+        </div>
+    </form>
+</div>
 </div>
 {% endblock %}

@@ -33,6 +33,14 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+    def get_display_name(self):
+        """Получить отображаемое имя пользователя"""
+        if self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        elif self.first_name:
+            return self.first_name
+        else:
+            return self.username
 
 class Tag(models.Model):
     class Meta:
@@ -52,6 +60,14 @@ class QuestionManager(models.Manager):
         return self.filter(is_active=True).annotate(
             answers_count=Count('answers')
         ).order_by('-answers_count', '-created_at')
+    def with_tag(self, tag_name):
+        """
+        Возвращает вопросы с указанным тегом
+        """
+        return self.filter(
+            is_active=True,
+            tags__name=tag_name 
+        ).order_by('-created_at')
 
 class Question(DefaultModel):
     class Meta:

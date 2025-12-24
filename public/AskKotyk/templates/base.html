@@ -22,10 +22,27 @@
             <a href="{% url 'app:ask' %}" class="search-button">ASK!</a>
         </div>
         <div class="profile">
-            <div class="profile-actions">
-                <a href="{% url 'app:login' %}">log in</a>
-                <a href="{% url 'app:signup' %}">register</a>
-            </div>
+            {% if user.is_authenticated %}
+                <div class="profile-actions">
+                    <span style="color: var(--main_heder_text_color); margin-right: 10px;">Hello, {{ user.username }}!</span>
+                    <a href="{% url 'app:profile_edit' %}">Profile</a>
+                    <form method="post" action="{% url 'app:logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" style="background: none; border: none; color: var(--main_heder_text_color); cursor: pointer; text-decoration: underline; font-size: inherit; padding: 0;">logout</button>
+                    </form>
+                </div>
+                {% if user.avatar %}
+                    <div class="avatar" style="background-image: url('{{ user.avatar.url }}')"></div>
+                {% else %}
+                    <div class="avatar"></div>
+                {% endif %}
+            {% else %}
+                <div class="profile-actions">
+                    <a href="{% url 'app:login' %}">log in</a>
+                    <a href="{% url 'app:signup' %}">register</a>
+                </div>
+                <div class="avatar"></div>
+            {% endif %}
         </div>
     </header>
 
