@@ -60,6 +60,13 @@ class IndexView(BaseView, PaginatedView):
         questions = self.get_questions()
         pagination_data = self.paginate_questions(questions, page)
 
+        user = self.request.user
+        for question in pagination_data['questions']:
+            if user.is_authenticated:
+                question.user_vote = question.user_vote(user)
+            else:
+                question.user_vote = None
+
         context.update(pagination_data)
         context.update(self.get_base_context())
         context['page_title'] = 'New Questions'
@@ -83,6 +90,14 @@ class HotQuestionsView(BaseView, PaginatedView):
 
         questions = self.get_questions()
         pagination_data = self.paginate_questions(questions, page)
+
+        user = self.request.user
+        for question in pagination_data['questions']:
+            if user.is_authenticated:
+                question.user_vote = question.user_vote(user)
+            else:
+                question.user_vote = None
+
 
         context.update(pagination_data)
         context.update(self.get_base_context())
@@ -110,6 +125,14 @@ class TagQuestionsView(BaseView, PaginatedView):
 
         questions = self.get_questions(tag_name)
         pagination_data = self.paginate_questions(questions, page)
+
+        user = self.request.user
+        for question in pagination_data['questions']:
+            if user.is_authenticated:
+                question.user_vote = question.user_vote(user)
+            else:
+                question.user_vote = None
+
 
         context.update(pagination_data)
         context.update(self.get_base_context())
@@ -140,6 +163,16 @@ class QuestionDetailView(BaseView, PaginatedView):
             question=question,
             is_active=True
         ).select_related('author').order_by('-is_correct', '-created_at')
+
+        user = self.request.user
+        if user.is_authenticated:
+            question.user_vote = question.user_vote(user)
+            for answer in answers:
+                answer.user_vote = answer.user_vote(user)
+        else:
+            question.user_vote = None
+            for answer in answers:
+                answer.user_vote = None
 
         count_answers = answers.count()
         max_page = math.ceil(count_answers / self.ANSWERS_PER_PAGE)

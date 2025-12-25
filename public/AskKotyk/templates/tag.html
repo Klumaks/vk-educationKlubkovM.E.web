@@ -19,9 +19,17 @@
                 {% endif %}
                 <a href="" class="author-name">{{ question.author.username }}</a>
                 <div class="votes">
-                    <button class="vote-btn up">↑</button>
+                    <button class="vote-btn up {% if question.user_vote == 'like' %}active{% endif %}"
+                            data-question-id="{{ question.id }}"
+                            data-authenticated="{{ user.is_authenticated|yesno:'True,False' }}">
+                        ↑
+                    </button>
                     <span class="vote-count">{{ question.votes_count }}</span>
-                    <button class="vote-btn down">↓</button>
+                    <button class="vote-btn down {% if question.user_vote == 'dislike' %}active{% endif %}"
+                            data-question-id="{{ question.id }}"
+                            data-authenticated="{{ user.is_authenticated|yesno:'True,False' }}">
+                        ↓
+                    </button>
                 </div>
             </div>
             <div class="question-text">

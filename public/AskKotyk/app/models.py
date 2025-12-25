@@ -66,7 +66,7 @@ class QuestionManager(models.Manager):
         """
         return self.filter(
             is_active=True,
-            tags__name=tag_name 
+            tags__name=tag_name
         ).order_by('-created_at')
 
 class Question(DefaultModel):
@@ -98,6 +98,21 @@ class Question(DefaultModel):
         if not self.slug:
             self.slug = slugify(self.title, allow_unicode=True)
         return super(Question, self).save(*args, **kwargs)
+    def votes_count(self):
+        likes = self.questionlike_set.filter(is_like=True).count()
+        dislikes = self.questionlike_set.filter(is_like=False).count()
+        return likes - dislikes
+
+    def user_vote(self, user):
+        """Получить голос пользователя для этого вопроса"""
+        if not user.is_authenticated:
+            return None
+        try:
+            vote = QuestionLike.objects.get(user=user, question=self)
+            return 'like' if vote.is_like else 'dislike'
+        except QuestionLike.DoesNotExist:
+            return None
+
 
 class Answer(DefaultModel):
     class Meta:
@@ -116,6 +131,20 @@ class Answer(DefaultModel):
         likes = self.answerlike_set.filter(is_like=True).count()
         dislikes = self.answerlike_set.filter(is_like=False).count()
         return likes - dislikes
+    def votes_count(self):
+        likes = self.answerlike_set.filter(is_like=True).count()
+        dislikes = self.answerlike_set.filter(is_like=False).count()
+        return likes - dislikes
+
+    def user_vote(self, user):
+        """Получить голос пользователя для этого ответа"""
+        if not user.is_authenticated:
+            return None
+        try:
+            vote = AnswerLike.objects.get(user=user, answer=self)
+            return 'like' if vote.is_like else 'dislike'
+        except AnswerLike.DoesNotExist:
+            return None
 
 class QuestionLike(models.Model):
     class Meta:

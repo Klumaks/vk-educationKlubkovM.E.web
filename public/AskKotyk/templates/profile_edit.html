@@ -44,7 +44,8 @@
         </div>
 
         <div class="form-group">
-            <label>Avatar</label>
+            <label for="id_avatar">Avatar</label>
+
             <div class="avatar-upload">
                 <div class="current-avatar">
                     <div class="avatar-preview"
@@ -52,6 +53,9 @@
                     <span>Current</span>
                 </div>
                 <div class="upload-controls">
+                    <label for="id_avatar" class="btn-choose" style="display: inline-block; margin-bottom: 10px; cursor: pointer;">
+                        Choose File
+                    </label>
                     {{ form.avatar }}
                     <span class="file-path">{% if user.avatar %}{{ user.avatar.name }}{% else %}No avatar selected{% endif %}</span>
                 </div>

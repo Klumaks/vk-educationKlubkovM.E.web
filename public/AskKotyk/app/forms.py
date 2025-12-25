@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from django.forms.widgets import PasswordInput
 from django.core.exceptions import ValidationError
 from app.models import User, Question, Answer, Tag
-
+import os
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -173,3 +173,13 @@ class ProfileEditForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'avatar': forms.FileInput(attrs={'class': 'form-control'}),
         }
+    def clean_avatar(self):
+        avatar = self.cleaned_data.get('avatar')
+        if avatar:
+            if avatar.size > 2 * 1024 * 1024:
+                raise ValidationError('Image file too large ( > 2MB )')
+            valid_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+            extension = os.path.splitext(avatar.name)[1].lower()
+            if extension not in valid_extensions:
+                raise ValidationError('Unsupported file extension. Use: JPG, JPEG, PNG, GIF')
+        return avatar

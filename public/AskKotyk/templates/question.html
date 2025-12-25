@@ -8,15 +8,23 @@
         <div class="question">
             <div class="question-author">
                 {% if question.author.avatar %}
-                    <div class="author-avatar" style="background-image: url('{{ question.author.avatar.url }}')"></div>
+                <div class="author-avatar" style="background-image: url('{{ question.author.avatar.url }}')"></div>
                 {% else %}
-                    <div class="author-avatar tech-guru-avatar"></div>
+                <div class="author-avatar tech-guru-avatar"></div>
                 {% endif %}
                 <a href="" class="author-name">{{ question.author.username }}</a>
                 <div class="votes">
-                    <button class="vote-btn up">↑</button>
+                    <button class="vote-btn up {% if question.user_vote == 'like' %}active{% endif %}"
+                        data-question-id="{{ question.id }}"
+                        data-authenticated="{{ user.is_authenticated|yesno:'True,False' }}">
+                        ↑
+                    </button>
                     <span class="vote-count">{{ question.votes_count }}</span>
-                    <button class="vote-btn down">↓</button>
+                    <button class="vote-btn down {% if question.user_vote == 'dislike' %}active{% endif %}"
+                        data-question-id="{{ question.id }}"
+                        data-authenticated="{{ user.is_authenticated|yesno:'True,False' }}">
+                        ↓
+                    </button>
                 </div>
             </div>
             <div class="question-text">
@@ -36,25 +44,40 @@
         <h2>Answers ({{ answers_count }})</h2>
 
         {% for answer in answers %}
-        <div class="answer">
+        <div class="answer" id="answer-{{ answer.id }}">
             <div class="answer-author">
                 {% if answer.author.avatar %}
-                    <div class="author-avatar" style="background-image: url('{{ answer.author.avatar.url }}')"></div>
+                <div class="author-avatar" style="background-image: url('{{ answer.author.avatar.url }}')"></div>
                 {% else %}
-                    <div class="author-avatar
+                <div class="author-avatar
                         {% if answer.author.username == 'Kotyk Kotykov' %}kotyk-avatar
                         {% elif answer.author.username == 'tech_guru' %}tech-guru-avatar
                         {% elif answer.author.username == 'Murzyk' %}murzyk-avatar
                         {% elif answer.author.username == 'Pushok' %}pushok-avatar
                         {% else %}anigilus-avatar{% endif %}">
-                    </div>
+                </div>
                 {% endif %}
                 <a href="" class="author-name">{{ answer.author.username }}</a>
                 <div class="votes">
-                    <button class="vote-btn up">↑</button>
+                    <button class="vote-btn up {% if answer.user_vote == 'like' %}active{% endif %}"
+                        data-answer-id="{{ answer.id }}"
+                        data-authenticated="{{ user.is_authenticated|yesno:'True,False' }}">
+                        ↑
+                    </button>
                     <span class="vote-count">{{ answer.votes_count }}</span>
-                    <button class="vote-btn down">↓</button>
+                    <button class="vote-btn down {% if answer.user_vote == 'dislike' %}active{% endif %}"
+                        data-answer-id="{{ answer.id }}"
+                        data-authenticated="{{ user.is_authenticated|yesno:'True,False' }}">
+                        ↓
+                    </button>
                 </div>
+
+                {% if user == question.author %}
+                <button class="btn-choose mark-correct-btn {% if answer.is_correct %}active{% endif %}"
+                    data-answer-id="{{ answer.id }}">
+                    {% if answer.is_correct %}✓ Correct Answer{% else %}Mark as Correct{% endif %}
+                </button>
+                {% endif %}
             </div>
             <div class="answer-text">
                 {% if answer.is_correct %}
@@ -69,60 +92,56 @@
     {% if answers_max_page > 1 %}
     <nav class="pagination answers-pagination">
         {% if page > 1 %}
-            <a href="?page={{ page|add:-1 }}" class="page-link prev">‹ Назад</a>
+        <a href="?page={{ page|add:-1 }}" class="page-link prev">‹ Назад</a>
         {% else %}
-            <span class="page-link prev disabled">‹ Назад</span>
+        <span class="page-link prev disabled">‹ Назад</span>
         {% endif %}
 
-<div class="page-numbers">
-    {% if page > 3 %}
-        <a href="?page=1" class="page-link">1</a>
-        <span class="page-link ellipsis">...</span>
-    {% endif %}
-
-    {% for i in pages %}
-        {% if i >= page|add:-2 and i <= page|add:2 %}
-            {% if page == i %}
-                <span class="page-link active">{{ i }}</span>
-            {% else %}
-                <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+        <div class="page-numbers">
+            {% if page > 3 %}
+            <a href="?page=1" class="page-link">1</a>
+            <span class="page-link ellipsis">...</span>
             {% endif %}
-        {% endif %}
-    {% endfor %}
 
-    {% if page < max_page|add:-2 %}
-        <span class="page-link ellipsis">...</span>
-        <a href="?page={{ max_page }}" class="page-link">{{ max_page }}</a>
-    {% endif %}
-</div>
-        {% if page < answers_max_page %}
-            <a href="?page={{ page|add:1 }}" class="page-link next">Вперед ›</a>
-        {% else %}
+            {% for i in pages %}
+            {% if i >= page|add:-2 and i <= page|add:2 %} {% if page == i %} <span class="page-link active">{{ i }}</span>
+                {% else %}
+                <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+
+                {% if page < max_page|add:-2 %} <span class="page-link ellipsis">...</span>
+                    <a href="?page={{ max_page }}" class="page-link">{{ max_page }}</a>
+                    {% endif %}
+        </div>
+        {% if page < answers_max_page %} <a href="?page={{ page|add:1 }}" class="page-link next">Вперед ›</a>
+            {% else %}
             <span class="page-link next disabled">Вперед ›</span>
-        {% endif %}
+            {% endif %}
     </nav>
     {% endif %}
 
     <div class="answer-form-section">
-    <h2>Your Answer</h2>
-    <form class="answer-form" method="post">
-        {% csrf_token %}
+        <h2>Your Answer</h2>
+        <form class="answer-form" method="post">
+            {% csrf_token %}
 
-        {% if answer_form.non_field_errors %}
+            {% if answer_form.non_field_errors %}
             <div class="error-message" style="margin-bottom: 20px;">
                 {{ answer_form.non_field_errors }}
             </div>
-        {% endif %}
+            {% endif %}
 
-        {{ answer_form.text }}
-        {% if answer_form.text.errors %}
+            {{ answer_form.text }}
+            {% if answer_form.text.errors %}
             <div class="error">{{ answer_form.text.errors }}</div>
-        {% endif %}
+            {% endif %}
 
-        <div class="form-footer">
-            <button type="submit" class="btn btn-submit">Answer</button>
-        </div>
-    </form>
-</div>
+            <div class="form-footer">
+                <button type="submit" class="btn btn-submit">Answer</button>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}
